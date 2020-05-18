@@ -1,0 +1,12 @@
+version: '3.7'
+services:
+  nginx-proxy:
+    container_name: nginx-proxy
+    restart: 'always'
+    image: jwilder/nginx-proxy
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock
+      - CERTROOT:/etc/nginx/certs
+    ports:
+      - "80:80"
+      - "443:443"

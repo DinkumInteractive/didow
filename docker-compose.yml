@@ -1,0 +1,77 @@
+version: '3.7'
+services:
+  PROJECT:
+    container_name: PROJECT
+    depends_on:
+      - PROJECT_db
+    image: dindow/wordpress:5.4.1-php7.3-xdebug-unit6.0
+    restart: 'unless-stopped'
+    volumes:
+      - ./html:/var/www/html
+      # **** WEBGRIND: UNCOMMENT this if you want to enable profiler and use WEBGRIND ****
+      # - ./cachegrind:/tmp/cachegrind
+    environment:
+      - VIRTUAL_HOST=PROJECT.TLD
+      - HTTPS_METHOD=noredirect
+      - WORDPRESS_DB_HOST=PROJECT_db
+      - WORDPRESS_DB_USER=wordpress
+      - WORDPRESS_DB_PASSWORD=wordpress
+      - WORDPRESS_DB_NAME=wordpress
+      - XDEBUG_CONFIG=remote_host=REMOTEHOST remote_port=REMOTEPORT remote_enable=1 remote_autostart=1
+      # **** WEBGRIND: UNCOMMENT this if you want to enable profiler and use WEBGRIND ****
+      # profiler_enable=1 profiler_enable_trigger=1 profiler_output_name=cachegrind.out.%t profiler_output_dir=/tmp/cachegrind
+    expose:
+      - "80"
+      - "443"
+    # Use nginx network name, check using "docker network ls" command
+    network_mode: _nginx_proxy_default
+
+  PROJECT_db:
+    container_name: PROJECT_db
+    image: mariadb:10.0
+    restart: 'unless-stopped'
+    volumes:
+      - ./db_data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=wordpress
+      - MYSQL_DATABASE=wordpress
+      - MYSQL_USER=wordpress
+      - MYSQL_PASSWORD=wordpress
+    # Use nginx network name, check using "docker network ls" command
+    network_mode: _nginx_proxy_default
+
+  PROJECT_pma:
+    container_name: PROJECT_pma
+    depends_on:
+      - PROJECT_db
+    image: phpmyadmin/phpmyadmin
+    restart: 'unless-stopped'
+    expose:
+      - "80"
+      - "443"
+    environment:
+      - PMA_HOST=PROJECT_db
+      - PMA_USER=root
+      - PMA_PASSWORD=wordpress
+      - PHP_UPLOAD_MAX_FILESIZE=256M
+      - MYSQL_ROOT_PASSWORD=wordpress
+      - VIRTUAL_HOST=phpmyadmin.PROJECT.TLD
+      - HTTPS_METHOD=noredirect
+    # Use nginx network name, check using "docker network ls" command
+    network_mode: _nginx_proxy_default
+
+  # **** WEBGRIND: UNCOMMENT this if you want to enable profiler and use WEBGRIND ****
+  # PROJECT_webgrind:
+  #   container_name: PROJECT_webgrind
+  #   image: devgeniem/webgrind
+  #   restart: 'unless-stopped'
+  #   expose:
+  #     - "80"
+  #     - "443"
+  #   volumes:
+  #     - ./cachegrind:/tmp/xdebug
+  #   environment:
+  #     - VIRTUAL_HOST=webgrind.PROJECT.TLD
+  #     - HTTPS_METHOD=noredirect
+  #   # Use nginx network name, check using "docker network ls" command
+  #   network_mode: _nginx_proxy_default
