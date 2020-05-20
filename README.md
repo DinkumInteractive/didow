@@ -1,9 +1,9 @@
-# DockPressDebug
+# DIDOW
 
 ## Requirements
 - Docker
 
-## Create root sites folder
+## Create root sites project folder
 1. Create a folder to use as root of all the sites you is going to create, for example `docker-didow`.
 All the sites created will be stored in `/sites/` folder creating the following folder's structure `didow-docker/sites/PROJECT_NAME`.
 2. Create `_didow` folder to use for didow repository.
@@ -21,6 +21,11 @@ Create a new WordPress project. Inside root sites folder run the create command.
 
 *Command:*
 `./_didow/didow-wp.sh create PROJECT_NAME`
+
+### Project access
+Once the process is finished you can access to the site project using the url format `PROJECT_NAME.TLD` where default `TLD` is `di-local.com`.
+So if you create a project `my_site` the default url will be `my_site.di-local.com`.
+If you want to use a different `TLD` you can edit the `_conf/tld.conf` file and setup your own.
 
 ### Install ssl cert in local keys and make it always trusted
 1. Open Keichain Access App.
@@ -41,7 +46,7 @@ During project delete you have the options to:
 ## Delete a project
 During project delete you have the options to:
 - Deleting project containers: this will stop and then remove all the containers related to this project along with their volumes, all database infomation will be lost. Also hosts declaration and SSL certificates will be removed.
-- Deleting project files: this will delete all project folders
+- Deleting project files: this will delete all project folders.
 
 *Command:*
 `./_didow/didow-wp.sh delete PROJECT_NAME`
