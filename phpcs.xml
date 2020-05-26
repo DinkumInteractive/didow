@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<ruleset name="WordPress Coding Standards">
+	<description>Wordpress Didow PHP_CodeSniffer rulesets.</description>
+
+	<!-- What to scan. -->
+	<file>.</file>
+
+	<!-- Ignoring select files/folders.
+		https://github.com/squizlabs/PHP_CodeSniffer/wiki/Advanced-Usage#ignoring-files-and-folders -->
+	<exclude-pattern>*/node_modules/*</exclude-pattern>
+	<exclude-pattern>*/vendor/*</exclude-pattern>
+
+	<!-- Show progress, show the error codes for each message (source). -->
+	<arg value="ps" />
+
+	<!-- Check up to 8 files simultaneously. -->
+	<arg name="parallel" value="8" />
+
+	<!-- Configs -->
+	<config name="minimum_supported_wp_version" value="5.0" />
+	<config name="testVersion" value="7.0-" />
+
+	<!-- Rules -->
+	<rule ref="Wordpress" />
+
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array" value="YOUR_TEXT_DOMAIN" />
+		</properties>
+	</rule>
+
+	<!-- Enable when UNIT tests are enabled -->
+	<rule ref="PHPCompatibility">
+		<exclude-pattern>tests/</exclude-pattern>
+	</rule>
+
+	<rule ref="WordPress.Files.FileName.InvalidClassFileName">
+		<exclude-pattern>inc/**/abstract-*.php</exclude-pattern>
+		<exclude-pattern>admin/inc/**/abstract-*.php</exclude-pattern>
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+
+	<rule ref="Generic.Commenting">
+		<exclude-pattern>tests/</exclude-pattern>
+	</rule>
+
+	<rule ref="WordPress.Files.FileName.NotHyphenatedLowercase">
+		<exclude-pattern>i18n/</exclude-pattern>
+	</rule>
+</ruleset>

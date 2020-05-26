@@ -199,7 +199,11 @@ delete(){
 		# $site_dir/docker-compose down -v >& /dev/null
 		cd $site_dir
 		docker-compose down -v
-		sleep 10
+		for i in {1..5}
+		do
+			printf '.'
+			sleep 1
+		done
 		cd $source_root
 
 		echo "Deleting $project certificates."
@@ -262,6 +266,7 @@ init() {
 	# Copy config files
 	cp -R "$source_root"/.vscode "$www_dir"
 	cp -R "$source_root"/.editorconfig "$www_dir"
+	cp -R "$source_root"/phpcs.xml "$www_dir"
 
 	# ignore project directories
 	cp "$source_root"/.gitignore.dist "$www_dir"/.gitignore
@@ -272,25 +277,27 @@ init() {
 	# starting docker-compose in detached mode
     docker-compose up -d
 
-	if confirm "Do you want to migrate an existing site?"; then
-		echo "Waiting until containters are ready."
-		i=0
-		code=null
-		while [ $i -lt 60 ]
-		do
-			((i++))
-			printf '.'
-			code=$(curl -s -o /dev/null -I -w "%{http_code}" "http://$project.$tld")
-			if [[ "$code" -eq "200" || "$code" -eq "302" ]]; then
-				printf '\n'
-				break
-			fi
-			sleep 1
-		done
+	echo "Waiting until containters are ready."
+	i=0
+	code=null
+	while [ $i -lt 60 ]
+	do
+		((i++))
+		printf '.'
+		code=$(curl -s -o /dev/null -I -w "%{http_code}" "http://$project.$tld")
+		if [[ "$code" -eq "200" || "$code" -eq "302" ]]; then
+			printf '\n'
+			break
+		fi
+		sleep 1
+	done
+	echo "Containters are ready."
 
-		echo "Containters are ready."
+	if confirm "Do you want to migrate an existing site?"; then
 		if [[ "$code" -eq "200" || "$code" -eq "302" ]]; then
 			migrate $project
+		else
+			echo "Site is not responding, try running migrate command again or check your containers and configuration to confirm all is ok."
 		fi
 	fi
 }
@@ -401,7 +408,7 @@ migrate_db() {
 	while true;
 	do
 		# Ask the question - use /dev/tty in case stdin is redirected from somewhere else
-		read -p "Database Dump File full path [empty to continue without migration process]: " dump_file </dev/tty
+		read -e -p "Database Dump File full path [empty to continue without migration process]: " dump_file </dev/tty
 
 		# Default?
 		if [[ -z "$dump_file" ]]; then
@@ -412,8 +419,8 @@ migrate_db() {
 			break
 		fi
 	done
-	echo "docker exec -i $project _db mysql --init-command='SET SESSION FOREIGN_KEY_CHECKS=0;' -uwordpress -pwordpress wordpress < $dump_file"
-	docker exec -i "$project"_db mysql --init-command="SET SESSION FOREIGN_KEY_CHECKS=0;" -uwordpress -pwordpress wordpress < "$dump_file"
+	echo "docker exec -i $project _db mysql --init-command='SET SESSION FOREIGN_KEY_CHECKS=0;' -uroot -pwordpress wordpress < $dump_file"
+	docker exec -i "$project"_db mysql --init-command="SET SESSION FOREIGN_KEY_CHECKS=0;" -uroot -pwordpress wordpress < "$dump_file"
 }
 
 migrate_domain() {
@@ -428,7 +435,7 @@ migrate_domain() {
 
     while true; do
         # Ask the question - use /dev/tty in case stdin is redirected from somewhere else
-        read -p "Remote Domain [empty to continue, use www THEN non-www versions to replace by your local domain]: " remote </dev/tty
+        read -e -p "Remote Domain [empty to continue, use www THEN non-www versions to replace by your local domain]: " remote </dev/tty
 
         # Default?
         if [[ -z "$remote" ]]; then
