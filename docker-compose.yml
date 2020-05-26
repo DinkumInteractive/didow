@@ -7,7 +7,7 @@ services:
     image: didow/wordpress:5.4.1-php7.3-xdebug-unit6.0
     restart: 'unless-stopped'
     volumes:
-      - ./html:/var/www/html
+      - ./html/wp-content:/var/www/html/wp-content
       # **** WEBGRIND: UNCOMMENT this if you want to enable profiler and use WEBGRIND ****
       # - ./cachegrind:/tmp/cachegrind
     environment:
@@ -17,6 +17,7 @@ services:
       - WORDPRESS_DB_USER=wordpress
       - WORDPRESS_DB_PASSWORD=wordpress
       - WORDPRESS_DB_NAME=wordpress
+      - WORDPRESS_DEBUG=1
       - XDEBUG_CONFIG=remote_host=REMOTEHOST remote_port=REMOTEPORT remote_enable=1 remote_autostart=1
       # **** WEBGRIND: UNCOMMENT this if you want to enable profiler and use WEBGRIND ****
       # profiler_enable=1 profiler_enable_trigger=1 profiler_output_name=cachegrind.out.%t profiler_output_dir=/tmp/cachegrind
