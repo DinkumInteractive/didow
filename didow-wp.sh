@@ -60,6 +60,9 @@ help(){
 
 	echo "Create user:"
 	echo "Usage: $command create_user {PROJECT_NAME}"
+
+	echo "Project Info:"
+	echo "Usage: $command info {PROJECT_NAME}"
 }
 
 args(){
@@ -173,7 +176,9 @@ create(){
 
     init $project
 
-	cd $source_root
+	# Go to the site html folder created.
+	cd $www_dir
+	echo "You can access to the site via http or https using the url: $project.$tld"
 }
 
 delete(){
@@ -328,7 +333,8 @@ hosts() {
         sudo -- sh -c "echo '' >> /etc/hosts";
     fi
 
-	sudo -- sh -c "echo '# $project.$tld Domains' >> $file";
+	sudo -- sh -c "echo '' >> $file";
+	sudo -- sh -c "echo '# ===== $project.$tld Domains =====' >> $file";
 	sudo -- sh -c "echo '$ip   $project.$tld' >> $file";
 	sudo -- sh -c "echo '$ip   phpmyadmin.$project.$tld' >> $file";
 	sudo -- sh -c "echo '$ip   webgrind.$project.$tld' >> $file";
@@ -395,6 +401,7 @@ migrate() {
 	if confirm "Do you want to create a new Admin user?"; then
 		create_user $project
 	fi
+	echo "You can access to the site via http or https using the url: $project.$tld"
 }
 
 migrate_db() {
@@ -466,8 +473,30 @@ create_user() {
 	docker exec -i "$project" /bin/bash -c "wp user create $username $useremail --role='administrator'"
 }
 
+info() {
+	local project=$1
+	if [[ -z $project ]];
+    then
+        echo "Project name required to display information."
+        return
+    fi
+
+	echo "URL: $project.$tld"
+	echo "PHPMyAdmin: phpmyadmin.$project.$tld"
+    echo "WWW Dir: $site_root/$project/html"
+    echo "Database Dir: $site_root/$project/db_data"
+    echo "Docker Compose File: $site_root/$project/docker-compose.yml"
+	echo "Cert Key File: $certs_root/$project.$tld.key"
+	echo "Cert CRT File: $certs_root/$project.$tld.crt"
+}
+
+if (! docker stats --no-stream > null ); then
+	echo "Docker is required for this tool, please launch Docker and then try again."
+	exit 1
+fi
+
 # Commands Allowed
-if [[ $1 =~ ^(help|create|migrate|create_user|delete)$ ]]; then
+if [[ $1 =~ ^(help|create|migrate|create_user|delete|info)$ ]]; then
 
     if [[ $1 = "bash" ]]; then
         set -- "bashitup" "${@:2}"

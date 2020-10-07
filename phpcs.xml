@@ -30,9 +30,9 @@
 	</rule>
 
 	<!-- Enable when UNIT tests are enabled -->
-	<rule ref="PHPCompatibility">
+	<!-- <rule ref="PHPCompatibility">
 		<exclude-pattern>tests/</exclude-pattern>
-	</rule>
+	</rule> -->
 
 	<rule ref="WordPress.Files.FileName.InvalidClassFileName">
 		<exclude-pattern>inc/**/abstract-*.php</exclude-pattern>
