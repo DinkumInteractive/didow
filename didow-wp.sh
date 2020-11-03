@@ -161,7 +161,8 @@ create(){
 
     mkdir -p $www_dir
 
-	ip=$(ifconfig | grep "inet " | grep -Fv 127.0.0.1 | awk '{print $2}')
+	# ip=$(ifconfig | grep "inet " | grep -Fv 127.0.0.1 | awk '{print $2}')
+	ip="host.docker.internal"
 	remoteport="9000"
 
     local dev_template=$(<$source_root/docker-compose.yml)
