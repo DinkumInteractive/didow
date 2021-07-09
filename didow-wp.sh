@@ -202,9 +202,9 @@ delete(){
 	# Stop and remove containers and volumes associated to them
 	if confirm " Stop and Delete containers and volumes for $project? This is irreversible!" N; then
         echo "Deleting $project containers and volumes."
-		# $site_dir/docker-compose down -v >& /dev/null
+		# $site_dir/docker compose down -v >& /dev/null
 		cd $site_dir
-		docker-compose down -v
+		docker compose down -v
 		for i in {1..5}
 		do
 			printf '.'
@@ -245,8 +245,8 @@ create_nginx_proxy(){
 
 	cd $site_dir
 
-	# starting docker-compose in detached mode
-    docker-compose up -d
+	# starting docker compose in detached mode
+    docker compose up -d
 
 	cd $source_root
 }
@@ -280,8 +280,8 @@ init() {
     echo "Starting containers"
 	cd $www_dir
 
-	# starting docker-compose in detached mode
-    docker-compose up -d
+	# starting docker compose in detached mode
+    docker compose up -d
 
 	echo "Waiting until containters are ready."
 	i=0
