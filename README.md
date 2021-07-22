@@ -14,7 +14,7 @@ https://github.com/DinkumInteractive/didow
 ## Build Docker Image
 Inside `docker-didow/_didow` folder, run the following command to generate the new docker image:
 
-`$ docker build -f Dockerfile -t didow/wordpress:beta-5.8-RC2-php7.4-apache-xdebug-unit6.0 .`
+`$ docker build -f Dockerfile -t didow/wordpress:5.8.0-php7.4-apache-xdebug-unit6.0 .`
 
 ## Create a new project
 Create a new WordPress project. Inside root sites folder run the create command.
