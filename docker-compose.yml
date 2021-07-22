@@ -4,8 +4,9 @@ services:
     container_name: PROJECT
     depends_on:
       - PROJECT_db
-    image: didow/wordpress:5.5.1-php7.4-xdebug-unit6.0
-    restart: 'unless-stopped'
+    image: didow/wordpress:beta-5.8-RC2-php7.4-apache-xdebug-unit6.0
+    # restart: 'unless-stopped'
+    restart: 'no'
     volumes:
       - ./html/wp-content:/var/www/html/wp-content
       # **** WEBGRIND: UNCOMMENT this if you want to enable profiler and use WEBGRIND ****
