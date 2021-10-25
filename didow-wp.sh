@@ -445,12 +445,15 @@ migrate_pantheon_db() {
 
 	echo "Downloading Latest Pantheon DB Backup."
 	terminus backup:get "$site" --element=db --to="$dump_file_compressed"
-	echo "Pantheon DB backup downloaded $dump_file_compressed."
+	echo "Downloading Pantheon DB backup as $dump_file_compressed."
 	if [[ -f "$dump_file_compressed" ]]; then
-		echo "Decompressing Pantheon DB backup $dump_file_compressed as $dump_file."
+		echo "Pantheon DB backup downloaded. Decompressing $dump_file_compressed as $dump_file."
 		gunzip "$dump_file_compressed"
 		echo "Restoring DB from $dump_file."
 		migrate_db_run $project "$dump_file"
+	else
+		echo "Pantheon DB backup was not downloaded check if the file exists and if you have the right permissions."
+		return
 	fi
 }
 
