@@ -18,7 +18,7 @@ services:
       - WORDPRESS_DB_USER=wordpress
       - WORDPRESS_DB_PASSWORD=wordpress
       - WORDPRESS_DB_NAME=wordpress
-      - WORDPRESS_DEBUG=1
+      - WORDPRESS_DEBUG=0
       - XDEBUG_CONFIG=remote_host=REMOTEHOST remote_port=REMOTEPORT remote_enable=1 remote_autostart=1
       # **** WEBGRIND: UNCOMMENT this if you want to enable profiler and use WEBGRIND ****
       # profiler_enable=1 profiler_enable_trigger=1 profiler_output_name=cachegrind.out.%t profiler_output_dir=/tmp/cachegrind

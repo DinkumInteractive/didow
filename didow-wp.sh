@@ -385,24 +385,73 @@ cert() {
 
 migrate() {
     local project=$1
+	local reply
     if [[ -z $project ]];
     then
         echo "Usage: \$command migrate \$project"
         exit 1
     fi
 
-	if confirm "Do you want to migrate a database?"; then
-		migrate_db $project
-	fi
+	printf "\n ==== DB MIGRATION ==== \n"
+	# Ask the question (not using "read -p" as it uses stderr not stdout)
+	echo -n "Migrate database? Press (P) for Pantheon, (L) for local file or press enter to continue: "
 
+	# Read the answer (use /dev/tty in case stdin is redirected from somewhere else)
+	read reply </dev/tty
+
+	# Check if the reply is valid
+	case "$reply" in
+		P*|p*) migrate_pantheon_db $project ;;
+		L*|l*) migrate_db $project ;;
+	esac
+
+	printf "\n ==== DOMAIN MIGRATION ==== \n"
 	if confirm "Do you want to migrate domain?"; then
 		migrate_domain $project
 	fi
 
+	printf "\n ==== ADMIN USER ==== \n"
 	if confirm "Do you want to create a new Admin user?"; then
 		create_user $project
 	fi
+	printf "\n ==== SITE ADDRESS ==== \n"
 	echo "You can access to the site via http or https using the url: $project.$tld"
+}
+
+migrate_pantheon_db() {
+	local project=$1
+	local dump_file="$site_root/$project/database.sql"
+	local dump_file_compressed="$dump_file.gz"
+	if [[ -z $project ]];
+    then
+        echo "Project name required to migrate a database."
+        return
+    fi
+
+
+	# Ask the question - use /dev/tty in case stdin is redirected from somewhere else
+	read -e -p "Enter site and environment as 'MY_SITE.ENV': " site </dev/tty
+
+	# Default?
+	if [[ -z "$site" ]]; then
+		echo "Site and ENV required to migrate a database."
+		return 0
+	fi
+
+	if confirm "Do you want to create a new DB Backup in Pantheon?" N; then
+		echo "Creating Pantheon DB Backup."
+		terminus backup:create "$site" --element=db
+	fi
+
+	echo "Downloading Latest Pantheon DB Backup."
+	terminus backup:get "$site" --element=db --to="$dump_file_compressed"
+	echo "Pantheon DB backup downloaded $dump_file_compressed."
+	if [[ -f "$dump_file_compressed" ]]; then
+		echo "Decompressing Pantheon DB backup $dump_file_compressed as $dump_file."
+		gunzip "$dump_file_compressed"
+		echo "Restoring DB from $dump_file."
+		migrate_db_run $project "$dump_file"
+	fi
 }
 
 migrate_db() {
@@ -427,6 +476,12 @@ migrate_db() {
 			break
 		fi
 	done
+	migrate_db_run $project $dump_file
+}
+
+migrate_db_run() {
+	local project=$1
+	local dump_file=$2
 	echo "docker exec -i $project _db mysql --init-command='SET SESSION FOREIGN_KEY_CHECKS=0;' -uroot -pwordpress wordpress < $dump_file"
 	docker exec -i "$project"_db mysql --init-command="SET SESSION FOREIGN_KEY_CHECKS=0;" -uroot -pwordpress wordpress < "$dump_file"
 }
@@ -510,4 +565,4 @@ else
   help
 fi
 
-echo END OF THE STORY!
+printf "\n ===== END OF THE STORY! ===== \n"
