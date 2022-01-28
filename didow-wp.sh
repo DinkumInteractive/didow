@@ -165,6 +165,14 @@ create(){
 	ip="host.docker.internal"
 	remoteport="9000"
 
+	# Ask the question - use /dev/tty in case stdin is redirected from somewhere else
+	read -e -p "Table Prefix: Press enter to use wp_ or write your table prefix if it is different: " tableprefix </dev/tty
+
+    # Default?
+	if [[ -z "$tableprefix" ]]; then
+		tableprefix="wp_"
+	fi
+
     local dev_template=$(<$source_root/docker-compose.yml)
 
     dev_template=${dev_template//PROJECT/$project}
@@ -172,6 +180,7 @@ create(){
     dev_template=${dev_template//CERTROOT/$certs_root}
     dev_template=${dev_template//REMOTEHOST/$ip}
     dev_template=${dev_template//REMOTEPORT/$remoteport}
+    dev_template=${dev_template//WP_TABLE_PREFIX/$tableprefix}
 
     echo "$dev_template" > "$site_dir/docker-compose.yml"
 

@@ -2,9 +2,6 @@
 	// See http://go.microsoft.com/fwlink/?LinkId=827846
 	// for the documentation about the extensions.json format
 	"recommendations": [
-		"msjsdiag.debugger-for-chrome",
-    "felixfbecker.php-intellisense",
-    "felixfbecker.php-debug",
 		"editorconfig.editorconfig",
 		"ikappas.phpcs"
 	]

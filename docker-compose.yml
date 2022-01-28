@@ -4,7 +4,7 @@ services:
     container_name: PROJECT
     depends_on:
       - PROJECT_db
-    image: didow/wordpress:5.8.2-php7.4-apache-xdebug-unit6.0
+    image: didow/wordpress:5.9.0-php8.0-apache-xdebug-unit6.0
     # restart: 'unless-stopped'
     restart: 'no'
     volumes:
@@ -18,6 +18,7 @@ services:
       - WORDPRESS_DB_USER=wordpress
       - WORDPRESS_DB_PASSWORD=wordpress
       - WORDPRESS_DB_NAME=wordpress
+      - WORDPRESS_TABLE_PREFIX=WP_TABLE_PREFIX
       - WORDPRESS_DEBUG=0
       - XDEBUG_CONFIG=remote_host=REMOTEHOST remote_port=REMOTEPORT remote_enable=1 remote_autostart=1
       # **** WEBGRIND: UNCOMMENT this if you want to enable profiler and use WEBGRIND ****
@@ -26,7 +27,7 @@ services:
       - "80"
       - "443"
     # Use nginx network name, check using "docker network ls" command
-    network_mode: _nginx_proxy_default
+    network_mode: nginx_proxy_default
 
   PROJECT_db:
     container_name: PROJECT_db
@@ -40,7 +41,7 @@ services:
       - MYSQL_USER=wordpress
       - MYSQL_PASSWORD=wordpress
     # Use nginx network name, check using "docker network ls" command
-    network_mode: _nginx_proxy_default
+    network_mode: nginx_proxy_default
 
   PROJECT_pma:
     container_name: PROJECT_pma
@@ -60,7 +61,7 @@ services:
       - VIRTUAL_HOST=phpmyadmin.PROJECT.TLD
       - HTTPS_METHOD=noredirect
     # Use nginx network name, check using "docker network ls" command
-    network_mode: _nginx_proxy_default
+    network_mode: nginx_proxy_default
 
   # **** WEBGRIND: UNCOMMENT this if you want to enable profiler and use WEBGRIND ****
   # PROJECT_webgrind:
@@ -76,4 +77,4 @@ services:
   #     - VIRTUAL_HOST=webgrind.PROJECT.TLD
   #     - HTTPS_METHOD=noredirect
   #   # Use nginx network name, check using "docker network ls" command
-  #   network_mode: _nginx_proxy_default
+  #   network_mode: nginx_proxy_default

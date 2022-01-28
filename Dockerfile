@@ -2,7 +2,7 @@
 # Docker Hub: https://registry.hub.docker.com/u/johnrom/docker-wordpress-wp-cli-xdebug/
 # Github Repo: https://github.com/johnrom/docker-wordpress-wp-cli-xdebug
 
-FROM wordpress:5.8.2-php7.4-apache
+FROM wordpress:5.9.0-php8.0-apache
 LABEL maintainer=guillermo@dinkuminteractive.com
 
 # Add sudo in order to run wp-cli as the www-data user
