@@ -21,6 +21,9 @@
 # Script name
 command=$0
 
+# Pantheon site and env
+pantheon_site_env=""
+
 # Define script source
 source="$PWD/_didow/didow-wp.sh"
 source_root="$PWD/_didow"
@@ -410,12 +413,18 @@ migrate() {
 
 	# Check if the reply is valid
 	case "$reply" in
-		P*|p*) migrate_pantheon_db $project ;;
+		P*|p*)
+        migrate_pantheon_db $project
+        ;;
 		L*|l*) migrate_db $project ;;
 	esac
 
 	printf "\n ==== DOMAIN MIGRATION ==== \n"
 	if confirm "Do you want to migrate domain?"; then
+        if [ "$reply" = "p" -o "$reply" = "P" ]; then
+            echo "Domain list from Pantheon: $pantheon_site_env"
+            terminus domain:list "$pantheon_site_env"
+        fi
 		migrate_domain $project
 	fi
 
@@ -439,22 +448,22 @@ migrate_pantheon_db() {
 
 
 	# Ask the question - use /dev/tty in case stdin is redirected from somewhere else
-	read -e -p "Enter site and environment as 'MY_SITE.ENV': " site </dev/tty
+	read -e -p "Enter site and environment as 'MY_SITE.ENV': " pantheon_site_env </dev/tty
 
 	# Default?
-	if [[ -z "$site" ]]; then
+	if [[ -z "$pantheon_site_env" ]]; then
 		echo "Site and ENV required to migrate a database."
 		return 0
 	fi
 
 	if confirm "Do you want to create a new DB Backup in Pantheon?" N; then
 		echo "Creating Pantheon DB Backup."
-		terminus backup:create "$site" --element=db
+		terminus backup:create "$pantheon_site_env" --element=db
 	fi
 
-	echo "Downloading Latest Pantheon DB Backup."
-	terminus backup:get "$site" --element=db --to="$dump_file_compressed"
-	echo "Downloading Pantheon DB backup as $dump_file_compressed."
+	echo "Trying to download latest Pantheon DB backup."
+	terminus backup:get "$pantheon_site_env" --element=db --to="$dump_file_compressed"
+	# echo "Downloading Pantheon DB backup started and will be stored as $dump_file_compressed."
 	if [[ -f "$dump_file_compressed" ]]; then
 		echo "Pantheon DB backup downloaded. Decompressing $dump_file_compressed as $dump_file."
 		gunzip "$dump_file_compressed"
