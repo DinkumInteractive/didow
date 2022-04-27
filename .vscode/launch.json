@@ -18,6 +18,13 @@
         "program": "${file}", 
         "cwd": "${fileDirname}",
         "port": 9000 // port used in docker compose remote port attribute: XDEBUG_CONFIG: remote_port=9000
+      },
+      {
+        "name": "Listen for JS",
+        "type": "chrome",
+        "request": "launch",
+        "url": "https://geneva.test/",
+        "webRoot": "/Users/memo/dinkum-docker/sites/geneva/html",
       }
     ]
   }
