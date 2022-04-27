@@ -23,8 +23,8 @@
         "name": "Listen for JS",
         "type": "chrome",
         "request": "launch",
-        "url": "https://geneva.test/",
-        "webRoot": "/Users/memo/dinkum-docker/sites/geneva/html",
+        "url": "https://URL.test/",
+        "webRoot": "${workspaceFolder}",
       }
     ]
   }
