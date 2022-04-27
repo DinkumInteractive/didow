@@ -5,9 +5,10 @@
         "name": "Listen for XDebug",
         "type": "php", 
         "request": "launch", 
-        "port": 9000, // port used in docker compose remote port attribute: XDEBUG_CONFIG: remote_port=9000
+        "stopOnEntry": false,
+        "port": 9003, // port used in docker compose remote port attribute: XDEBUG_CONFIG: remote_port=9000
         "pathMappings": {
-          "/var/www/html": "${workspaceRoot}"
+          "/var/www/html": "${workspaceFolder}"
         }
       },
       {
