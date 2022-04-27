@@ -4,7 +4,7 @@ services:
     container_name: PROJECT
     depends_on:
       - PROJECT_db
-    image: didow/wordpress:5.9.2-php8.0-apache-xdebug-unit6.0
+    image: didow/wordpress:beta-6.0-beta2-php8.0-apache-xdebug-unit6.0
     # restart: 'unless-stopped'
     restart: 'no'
     volumes:
